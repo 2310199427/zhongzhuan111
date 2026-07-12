@@ -1,0 +1,34 @@
+[project]
+name = "internal-build-mcp"
+version = "0.1.0"
+description = "Offline-first MCP server for an internal build platform"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "httpx>=0.27,<1",
+  "mcp>=1.9,<2",
+  "pydantic>=2.7,<3",
+  "pydantic-settings>=2.2,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2,<9",
+  "pytest-asyncio>=0.23,<1",
+  "respx>=0.21,<1",
+]
+
+[project.scripts]
+internal-build-mcp = "app.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-ra"

@@ -1,0 +1,2629 @@
+PS D:\LLL\project_HW\project\internal-build-mcp> uv run pytest -q
+..EEEEEEEEEEEE.....................EEEEEEEEEEEEEEEE....                                                          [100%]
+======================================================= ERRORS ========================================================
+______________________ ERROR at setup of test_preview_is_structured_and_does_not_expose_payload _______________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38410)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+_____________________ ERROR at teardown of test_preview_is_structured_and_does_not_expose_payload _____________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_preview_is_structured_and_does_not_expose_payload> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+________________________ ERROR at setup of test_dry_run_ids_increment_and_states_are_per_task _________________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38414)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+_______________________ ERROR at teardown of test_dry_run_ids_increment_and_states_are_per_task _______________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_dry_run_ids_increment_and_states_are_per_task> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+______________________ ERROR at setup of test_dry_run_executes_repository_and_task_authorization ______________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38418)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+____________________ ERROR at teardown of test_dry_run_executes_repository_and_task_authorization _____________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_dry_run_executes_repository_and_task_authorization> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+____________________ ERROR at setup of test_dry_run_logs_are_redacted_and_artifacts_are_synthetic _____________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38422)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+___________________ ERROR at teardown of test_dry_run_logs_are_redacted_and_artifacts_are_synthetic ___________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_dry_run_logs_are_redacted_and_artifacts_are_synthetic> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+_______________________________ ERROR at setup of test_unknown_dry_run_task_is_rejected _______________________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38426)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+_____________________________ ERROR at teardown of test_unknown_dry_run_task_is_rejected ______________________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_unknown_dry_run_task_is_rejected> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+____________________________ ERROR at setup of test_real_mode_delegates_to_platform_client ____________________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38430)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+__________________________ ERROR at teardown of test_real_mode_delegates_to_platform_client ___________________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_real_mode_delegates_to_platform_client> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+_________________________________ ERROR at setup of test_create_build_returns_task_id _________________________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38434)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+_______________________________ ERROR at teardown of test_create_build_returns_task_id ________________________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_create_build_returns_task_id> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+________________________________ ERROR at setup of test_create_timeout_is_not_retried _________________________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38438)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+_______________________________ ERROR at teardown of test_create_timeout_is_not_retried _______________________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_create_timeout_is_not_retried> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+________________________ ERROR at setup of test_http_errors_are_mapped[400-BuildPlatformError] ________________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38442)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+______________________ ERROR at teardown of test_http_errors_are_mapped[400-BuildPlatformError] _______________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_http_errors_are_mapped[400-BuildPlatformError]> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+________________________ ERROR at setup of test_http_errors_are_mapped[401-AuthorizationError] ________________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38446)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+______________________ ERROR at teardown of test_http_errors_are_mapped[401-AuthorizationError] _______________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_http_errors_are_mapped[401-AuthorizationError]> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+________________________ ERROR at setup of test_http_errors_are_mapped[403-AuthorizationError] ________________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38450)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+______________________ ERROR at teardown of test_http_errors_are_mapped[403-AuthorizationError] _______________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_http_errors_are_mapped[403-AuthorizationError]> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+________________________ ERROR at setup of test_http_errors_are_mapped[404-BuildNotFoundError] ________________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38454)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+______________________ ERROR at teardown of test_http_errors_are_mapped[404-BuildNotFoundError] _______________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_http_errors_are_mapped[404-BuildNotFoundError]> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+________________________ ERROR at setup of test_http_errors_are_mapped[500-BuildPlatformError] ________________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38458)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+______________________ ERROR at teardown of test_http_errors_are_mapped[500-BuildPlatformError] _______________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_http_errors_are_mapped[500-BuildPlatformError]> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+________________________________ ERROR at setup of test_non_json_response_is_rejected _________________________________
+
+fixturedef = <FixtureDef argname='event_loop' scope='function' baseid=''>
+
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef,
+    ) -> Generator[None, pluggy.Result, None]:
+        """Adjust the event loop policy when an event loop is produced."""
+        if fixturedef.argname == "event_loop":
+            # The use of a fixture finalizer is preferred over the
+            # pytest_fixture_post_finalizer hook. The fixture finalizer is invoked once
+            # for each fixture, whereas the hook may be invoked multiple times for
+            # any specific fixture.
+            # see https://github.com/pytest-dev/pytest/issues/5848
+            _add_finalizers(
+                fixturedef,
+                _close_event_loop,
+                _restore_event_loop_policy(asyncio.get_event_loop_policy()),
+                _provide_clean_event_loop,
+            )
+            outcome = yield
+>           loop: asyncio.AbstractEventLoop = outcome.get_result()
+                                              ^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:878:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:1177: in event_loop
+    with _temporary_event_loop_policy(new_loop_policy), _provide_event_loop() as loop:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:774: in _temporary_event_loop_policy
+    old_loop = _get_event_loop_no_warn()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pytest_asyncio\plugin.py:996: in _get_event_loop_no_warn
+    return asyncio.get_event_loop()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:699: in get_event_loop
+    self.set_event_loop(self.new_event_loop())
+                        ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\events.py:720: in new_event_loop
+    return self._loop_factory()
+           ^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\asyncio\windows_events.py:316: in __init__
+    super().__init__(proactor)
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:640: in __init__
+    self._make_self_pipe()
+C:\Program Files\Python312\Lib\asyncio\proactor_events.py:787: in _make_self_pipe
+    self._ssock, self._csock = socket.socketpair()
+                               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python312\Lib\socket.py:623: in _fallback_socketpair
+    csock.connect((addr, port))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<socket.socket [closed] fd=-1, family=2, type=1, proto=0>, ('127.0.0.1', 38462)), kwargs = {}
+
+    def fail_connection(*args: object, **kwargs: object) -> None:
+>       raise AssertionError("Real network access is forbidden in tests")
+E       AssertionError: Real network access is forbidden in tests
+
+tests\conftest.py:13: AssertionError
+_______________________________ ERROR at teardown of test_non_json_response_is_rejected _______________________________
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+  |     result: TResult | None = func()
+  |                              ^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 246, in <lambda>
+  |     lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+  |     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+  |     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+  |     raise exception
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\logging.py", line 858, in pytest_runtest_teardown
+  |     yield
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+  |     teardown.throw(exception)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\capture.py", line 905, in pytest_runtest_teardown
+  |     return (yield)
+  |             ^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+  |     res = hook_impl.function(*args)
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 193, in pytest_runtest_teardown
+  |     item.session._setupstate.teardown_exact(nextitem)
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 557, in teardown_exact
+  |     raise exceptions[0]
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\runner.py", line 546, in teardown_exact
+  |     fin()
+  |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1072, in finish
+  |     raise BaseExceptionGroup(msg, exceptions[::-1])
+  | ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_non_json_response_is_rejected> (3 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 980, in _provide_clean_event_loop
+    |     old_loop = _get_event_loop_no_warn(policy)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 961, in _restore_policy
+    |     loop = _get_event_loop_no_warn(previous_policy)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 994, in _get_event_loop_no_warn
+    |     return policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +---------------- 3 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py", line 1058, in finish
+    |     fin()
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py", line 944, in _close_event_loop
+    |     loop = policy.get_event_loop()
+    |            ^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 699, in get_event_loop
+    |     self.set_event_loop(self.new_event_loop())
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\events.py", line 720, in new_event_loop
+    |     return self._loop_factory()
+    |            ^^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\asyncio\windows_events.py", line 316, in __init__
+    |     super().__init__(proactor)
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 640, in __init__
+    |     self._make_self_pipe()
+    |   File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 787, in _make_self_pipe
+    |     self._ssock, self._csock = socket.socketpair()
+    |                                ^^^^^^^^^^^^^^^^^^^
+    |   File "C:\Program Files\Python312\Lib\socket.py", line 623, in _fallback_socketpair
+    |     csock.connect((addr, port))
+    |   File "D:\LLL\project_HW\project\internal-build-mcp\tests\conftest.py", line 13, in fail_connection
+    |     raise AssertionError("Real network access is forbidden in tests")
+    | AssertionError: Real network access is forbidden in tests
+    +------------------------------------
+================================================== warnings summary ===================================================
+tests/test_build_service.py: 6 warnings
+tests/test_platform_client.py: 8 warnings
+  D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\fixtures.py:1128: PluggyTeardownRaisedWarning: A plugin raised an exception during an old-style hookwrapper teardown.
+  Plugin: asyncio, Hook: pytest_fixture_setup
+  AssertionError: Real network access is forbidden in tests
+  For more information see https://pluggy.readthedocs.io/en/stable/api_reference.html#pluggy.PluggyTeardownRaisedWarning
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+
+tests/test_build_service.py: 6 warnings
+tests/test_platform_client.py: 8 warnings
+  D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\pytest_asyncio\plugin.py:944: DeprecationWarning: There is no current event loop
+    loop = policy.get_event_loop()
+
+tests/test_build_service.py::test_status_mapping[WAITING-queued]
+tests/test_security.py::test_redact_sensitive_text_removes_common_secret_forms
+  D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\unraisableexception.py:67: PytestUnraisableExceptionWarning: Exception ignored in: <function BaseEventLoop.__del__ at 0x00000227571D4040>
+
+  Traceback (most recent call last):
+    File "C:\Program Files\Python312\Lib\asyncio\base_events.py", line 732, in __del__
+      self.close()
+    File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 697, in close
+      self._close_self_pipe()
+    File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 779, in _close_self_pipe
+      self._ssock.close()
+      ^^^^^^^^^^^
+  AttributeError: 'ProactorEventLoop' object has no attribute '_ssock'
+
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnraisableExceptionWarning(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================================== short test summary info ===============================================
+ERROR tests/test_build_service.py::test_preview_is_structured_and_does_not_expose_payload - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_build_service.py::test_preview_is_structured_and_does_not_expose_payload - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_preview_is_structured_and_does_no...
+ERROR tests/test_build_service.py::test_dry_run_ids_increment_and_states_are_per_task - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_build_service.py::test_dry_run_ids_increment_and_states_are_per_task - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_dry_run_ids_increment_and_states_...
+ERROR tests/test_build_service.py::test_dry_run_executes_repository_and_task_authorization - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_build_service.py::test_dry_run_executes_repository_and_task_authorization - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_dry_run_executes_repository_and_t...
+ERROR tests/test_build_service.py::test_dry_run_logs_are_redacted_and_artifacts_are_synthetic - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_build_service.py::test_dry_run_logs_are_redacted_and_artifacts_are_synthetic - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_dry_run_logs_are_redacted_and_art...
+ERROR tests/test_build_service.py::test_unknown_dry_run_task_is_rejected - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_build_service.py::test_unknown_dry_run_task_is_rejected - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_unknown_dry_run_task_is_rejected>...
+ERROR tests/test_build_service.py::test_real_mode_delegates_to_platform_client - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_build_service.py::test_real_mode_delegates_to_platform_client - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_real_mode_delegates_to_platform_c...
+ERROR tests/test_platform_client.py::test_create_build_returns_task_id - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_platform_client.py::test_create_build_returns_task_id - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_create_build_returns_task_id> (3 ...
+ERROR tests/test_platform_client.py::test_create_timeout_is_not_retried - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_platform_client.py::test_create_timeout_is_not_retried - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_create_timeout_is_not_retried> (3...
+ERROR tests/test_platform_client.py::test_http_errors_are_mapped[400-BuildPlatformError] - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_platform_client.py::test_http_errors_are_mapped[400-BuildPlatformError] - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_http_errors_are_mapped[400-BuildP...
+ERROR tests/test_platform_client.py::test_http_errors_are_mapped[401-AuthorizationError] - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_platform_client.py::test_http_errors_are_mapped[401-AuthorizationError] - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_http_errors_are_mapped[401-Author...
+ERROR tests/test_platform_client.py::test_http_errors_are_mapped[403-AuthorizationError] - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_platform_client.py::test_http_errors_are_mapped[403-AuthorizationError] - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_http_errors_are_mapped[403-Author...
+ERROR tests/test_platform_client.py::test_http_errors_are_mapped[404-BuildNotFoundError] - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_platform_client.py::test_http_errors_are_mapped[404-BuildNotFoundError] - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_http_errors_are_mapped[404-BuildN...
+ERROR tests/test_platform_client.py::test_http_errors_are_mapped[500-BuildPlatformError] - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_platform_client.py::test_http_errors_are_mapped[500-BuildPlatformError] - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_http_errors_are_mapped[500-BuildP...
+ERROR tests/test_platform_client.py::test_non_json_response_is_rejected - AssertionError: Real network access is forbidden in tests
+ERROR tests/test_platform_client.py::test_non_json_response_is_rejected - ExceptionGroup: errors while tearing down fixture "event_loop" of <Coroutine test_non_json_response_is_rejected> (3...
+27 passed, 30 warnings, 28 errors in 1.57s
+D:\LLL\project_HW\project\internal-build-mcp\.venv\Lib\site-packages\_pytest\unraisableexception.py:67: PytestUnraisableExceptionWarning: Exception ignored in: <function BaseEventLoop.__del__ at 0x00000227571D4040>
+
+Traceback (most recent call last):
+  File "C:\Program Files\Python312\Lib\asyncio\base_events.py", line 732, in __del__
+    self.close()
+  File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 697, in close
+    self._close_self_pipe()
+  File "C:\Program Files\Python312\Lib\asyncio\proactor_events.py", line 779, in _close_self_pipe
+    self._ssock.close()
+    ^^^^^^^^^^^
+AttributeError: 'ProactorEventLoop' object has no attribute '_ssock'
+
+Enable tracemalloc to get traceback where the object was allocated.
+See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+  warnings.warn(pytest.PytestUnraisableExceptionWarning(msg))
